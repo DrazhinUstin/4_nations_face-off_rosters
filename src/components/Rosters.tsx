@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { abbreviations, rostersData } from '../lib/data';
 import { type Abbreviations, type Player, PlayerType } from '../lib/definitions';
-import { sortObjects } from '../lib/utils';
+import { cn, sortObjects } from '../lib/utils';
 
 export default function Rosters() {
   const teams = Object.keys(rostersData);
@@ -14,7 +14,10 @@ export default function Rosters() {
           <button
             key={team}
             onClick={() => setSelectedTeam(team)}
-            className={`cursor-pointer ${team === selectedTeam ? 'text-blue-500' : ''}`}
+            className={cn(
+              'cursor-pointer',
+              team === selectedTeam && 'cursor-default text-blue-500'
+            )}
           >
             {team}
           </button>
@@ -54,7 +57,10 @@ function PlayersTable({ title, players }: { title: string; players: Omit<Player,
             {headers.map(([abbr, name]) => (
               <th
                 key={name}
-                className={`cursor-pointer border border-gray-300 p-2 font-medium select-none ${name === sort?.prop ? 'bg-blue-100' : ''}`}
+                className={cn(
+                  'cursor-pointer border border-gray-300 p-2 font-medium select-none',
+                  name === sort?.prop && 'bg-blue-100'
+                )}
                 title={name.split('_').join(' ')}
                 onClick={() =>
                   setSort(
@@ -84,7 +90,10 @@ function PlayersTable({ title, players }: { title: string; players: Omit<Player,
               {Object.entries(player).map(([key, val], i) => (
                 <td
                   key={i}
-                  className={`border border-gray-300 p-2 text-center ${key === sort?.prop ? 'bg-blue-50' : ''}`}
+                  className={cn(
+                    'border border-gray-300 p-2 text-center',
+                    key === sort?.prop && 'bg-blue-50'
+                  )}
                 >
                   {key === 'birthdate' ? new Date(val).toLocaleDateString() : val}
                 </td>
