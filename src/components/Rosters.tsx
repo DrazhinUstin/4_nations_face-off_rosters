@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { abbreviations, rostersData } from '../lib/data';
 import { type Abbreviations, type Player, PlayerType } from '../lib/definitions';
+import { sortObjects } from '../lib/utils';
 
 export default function Rosters() {
   const teams = Object.keys(rostersData);
@@ -33,10 +34,17 @@ export default function Rosters() {
 }
 
 function PlayersTable({ title, players }: { title: string; players: Omit<Player, 'type'>[] }) {
+  const [sort, setSort] = useState<{ prop: string; order: 'asc' | 'desc' } | null>(null);
+
   const headers = Object.keys(players[0]).map((key) => [
     abbreviations[key as keyof Abbreviations],
-    key.split('_').join(' '),
+    key,
   ]);
+
+  const sortedPlayers = sort
+    ? sortObjects(players, sort.prop as keyof (typeof players)[0], sort.order)
+    : players;
+
   return (
     <div className="space-y-2">
       <h4 className="text-center font-bold">{title}</h4>
@@ -44,17 +52,40 @@ function PlayersTable({ title, players }: { title: string; players: Omit<Player,
         <thead>
           <tr>
             {headers.map(([abbr, name]) => (
-              <th key={abbr} className="border border-gray-300 p-2 font-medium" title={name}>
-                {abbr}
+              <th
+                key={name}
+                className={`cursor-pointer border border-gray-300 p-2 font-medium select-none ${name === sort?.prop ? 'bg-blue-100' : ''}`}
+                title={name.split('_').join(' ')}
+                onClick={() =>
+                  setSort(
+                    !sort || sort.prop !== name
+                      ? { prop: name, order: 'desc' }
+                      : sort.order === 'desc'
+                        ? { prop: name, order: 'asc' }
+                        : null
+                  )
+                }
+              >
+                <span className="relative">
+                  {abbr}
+                  {sort?.prop === name && (
+                    <span className="absolute">
+                      {sort.order === 'desc' ? <>&#11206;</> : <>&#11205;</>}
+                    </span>
+                  )}
+                </span>
               </th>
             ))}
           </tr>
         </thead>
         <tbody>
-          {players.map((player, i) => (
+          {sortedPlayers.map((player, i) => (
             <tr key={i}>
               {Object.entries(player).map(([key, val], i) => (
-                <td key={i} className="border border-gray-300 p-2 text-center">
+                <td
+                  key={i}
+                  className={`border border-gray-300 p-2 text-center ${key === sort?.prop ? 'bg-blue-50' : ''}`}
+                >
                   {key === 'birthdate' ? new Date(val).toLocaleDateString() : val}
                 </td>
               ))}
