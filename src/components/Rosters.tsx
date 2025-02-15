@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { abbreviations, rostersData } from '../lib/data';
 import { type Abbreviations, type Player, PlayerType } from '../lib/definitions';
-import { cn, sortObjects } from '../lib/utils';
+import { cn, formatDate, sortObjects } from '../lib/utils';
 
 export default function Rosters() {
   const teams = Object.keys(rostersData);
@@ -95,7 +95,7 @@ function PlayersTable({ title, players }: { title: string; players: Omit<Player,
                     key === sort?.prop && 'bg-blue-50'
                   )}
                 >
-                  {key === 'birthdate' ? new Date(val).toLocaleDateString() : val}
+                  {key === 'birthdate' ? formatDate(val) : val}
                 </td>
               ))}
             </tr>
