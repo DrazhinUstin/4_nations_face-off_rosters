@@ -51,57 +51,63 @@ function PlayersTable({ title, players }: { title: string; players: Omit<Player,
   return (
     <div className="space-y-2">
       <h4 className="text-center font-bold">{title}</h4>
-      <table className="w-full table-auto border-collapse border border-gray-300 text-sm">
-        <thead>
-          <tr>
-            {headers.map(([abbr, name]) => (
-              <th
-                key={name}
-                className={cn(
-                  'cursor-pointer border border-gray-300 p-2 font-medium select-none',
-                  name === sort?.prop && 'bg-blue-100'
-                )}
-                title={name.split('_').join(' ')}
-                onClick={() =>
-                  setSort(
-                    !sort || sort.prop !== name
-                      ? { prop: name, order: 'desc' }
-                      : sort.order === 'desc'
-                        ? { prop: name, order: 'asc' }
-                        : null
-                  )
-                }
-              >
-                <span className="relative">
-                  {abbr}
-                  {sort?.prop === name && (
-                    <span className="absolute">
-                      {sort.order === 'desc' ? <>&#11206;</> : <>&#11205;</>}
-                    </span>
-                  )}
-                </span>
-              </th>
-            ))}
-          </tr>
-        </thead>
-        <tbody>
-          {sortedPlayers.map((player, i) => (
-            <tr key={i}>
-              {Object.entries(player).map(([key, val], i) => (
-                <td
-                  key={i}
+      <div className="overflow-x-auto">
+        <table className="w-full text-sm">
+          <thead>
+            <tr className="border-t border-b border-gray-300">
+              {headers.map(([abbr, name], i) => (
+                <th
+                  key={name}
                   className={cn(
-                    'border border-gray-300 p-2 text-center',
-                    key === sort?.prop && 'bg-blue-50'
+                    'min-w-14 cursor-pointer p-2 font-medium select-none',
+                    i < 2 && 'sticky left-0 z-10 bg-white',
+                    i === 1 && 'left-14',
+                    name === sort?.prop && 'bg-blue-200'
                   )}
+                  title={name.split('_').join(' ')}
+                  onClick={() =>
+                    setSort(
+                      !sort || sort.prop !== name
+                        ? { prop: name, order: 'desc' }
+                        : sort.order === 'desc'
+                          ? { prop: name, order: 'asc' }
+                          : null
+                    )
+                  }
                 >
-                  {key === 'birthdate' ? formatDate(val) : val}
-                </td>
+                  <span className="relative">
+                    {abbr}
+                    {sort?.prop === name && (
+                      <span className="absolute">
+                        {sort.order === 'desc' ? <>&#11206;</> : <>&#11205;</>}
+                      </span>
+                    )}
+                  </span>
+                </th>
               ))}
             </tr>
-          ))}
-        </tbody>
-      </table>
+          </thead>
+          <tbody>
+            {sortedPlayers.map((player, index) => (
+              <tr key={index} className={cn('bg-white', index % 2 !== 0 && 'bg-gray-200')}>
+                {Object.entries(player).map(([key, val], i) => (
+                  <td
+                    key={i}
+                    className={cn(
+                      'min-w-14 p-2 text-center whitespace-nowrap',
+                      i < 2 && 'sticky left-0 bg-inherit',
+                      i === 1 && 'left-14',
+                      key === sort?.prop && (index % 2 !== 0 ? 'bg-blue-200' : 'bg-blue-100')
+                    )}
+                  >
+                    {key === 'birthdate' ? formatDate(val) : val}
+                  </td>
+                ))}
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
     </div>
   );
 }
